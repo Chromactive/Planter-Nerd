@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "988490490890",
+    "project_id": "pepperoni-nipples",
+    "storage_bucket": "pepperoni-nipples.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988490490890:android:b59616aa344fb9b85aebf3",
+        "android_client_info": {
+          "package_name": "com.example.planter_squared"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "988490490890-dejc9b1qdmd2h6u3utmptsonla9iovmh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlCbNMjD0rUjluN6I3d0CWA2sBdObaVm0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "988490490890-dejc9b1qdmd2h6u3utmptsonla9iovmh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "988490490890-h2pcnmcnap4obube2f7rav4r1t2t6lki.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.planterSquared"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
