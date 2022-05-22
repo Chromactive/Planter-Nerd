@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:planter_squared/screens/signup_user.dart';
 import 'package:planter_squared/utils/form_field_validators.dart';
-import 'package:planter_squared/utils/keyboard_adjustable.dart';
-import 'package:planter_squared/utils/text_with_dividers.dart';
 import 'package:planter_squared/widgets/form_input.dart';
 import 'package:planter_squared/widgets/google_button.dart';
+import 'package:planter_squared/widgets/keyboard_adjustable.dart';
+import 'package:planter_squared/widgets/text_widgets.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -13,6 +14,28 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  void _navigateToSignup() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => const SignupPage()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -42,7 +65,15 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
-                  const LoginForm(),
+                  LoginForm(
+                    emailController: _emailController,
+                    passwordController: _passwordController,
+                    submit: (formKey) async {
+                      if (formKey.currentState!.validate()) {
+                        print('Valid data!');
+                      }
+                    },
+                  ),
                   const Padding(
                     padding: EdgeInsets.only(top: 25.0),
                     child: Center(
@@ -50,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: _navigateToSignup,
                     style: TextButton.styleFrom(
                       minimumSize: const Size.fromHeight(32),
                       primary: Theme.of(context).primaryColor,
@@ -72,63 +103,62 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({Key? key}) : super(key: key);
+  const LoginForm({
+    Key? key,
+    required this.emailController,
+    required this.passwordController,
+    required this.submit,
+  }) : super(key: key);
+
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final Future<void> Function(GlobalKey<FormState> formKey) submit;
 
   @override
   State<LoginForm> createState() => _LoginFormState();
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late final TextEditingController _emailController;
-  late final TextEditingController _passwordController;
-
-  @override
-  void initState() {
-    super.initState();
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _passwordController.dispose();
-    _emailController.dispose();
-    super.dispose();
-  }
+  final GlobalKey<FormState> _key = GlobalKey<FormState>();
+  bool _isSubmitting = false;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Form(
-      key: _formKey,
+      key: _key,
       autovalidateMode: AutovalidateMode.always,
       child: Column(
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: FormInputText(
-              controller: _emailController,
+              controller: widget.emailController,
               fieldName: 'Email Address',
               textInputType: TextInputType.emailAddress,
               fieldHint: 'example@domain.com',
               required: true,
+              showSuggestions: true,
               validators: FormTextFieldValidators.emailField,
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: FormInputText(
-              controller: _passwordController,
+              controller: widget.passwordController,
               fieldName: 'Password',
               obscureText: true,
               required: true,
+              autocorrect: false,
+              showSuggestions: false,
               textInputAction: TextInputAction.done,
               validators: FormTextFieldValidators.passwordField,
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
             style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap),
@@ -140,21 +170,30 @@ class _LoginFormState extends State<LoginForm> {
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: TextButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  print('Valid data!');
-                }
-              },
+              onPressed: _isSubmitting
+                  ? null
+                  : () async {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      setState(() {
+                        _isSubmitting = true;
+                      });
+                      await widget.submit(_key);
+                      setState(() {
+                        _isSubmitting = false;
+                      });
+                    },
               style: TextButton.styleFrom(
                 minimumSize: const Size.fromHeight(32.0),
                 primary: theme.colorScheme.onBackground,
                 backgroundColor: theme.colorScheme.primary,
               ),
-              child: Text(
-                'Log in',
-                style: theme.textTheme.button?.copyWith(
-                    fontSize: 18, color: theme.colorScheme.onPrimary),
-              ),
+              child: _isSubmitting
+                  ? const Center(child: CircularProgressIndicator())
+                  : Text(
+                      'Log in',
+                      style: theme.textTheme.button?.copyWith(
+                          fontSize: 18, color: theme.colorScheme.onPrimary),
+                    ),
             ),
           ),
         ],
