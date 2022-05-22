@@ -2,7 +2,6 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:planter_squared/utils/form_field_validators.dart';
 import 'package:planter_squared/widgets/form_input.dart';
-import 'package:planter_squared/widgets/keyboard_adjustable.dart';
 import 'package:planter_squared/widgets/text_widgets.dart';
 
 class SignupPage extends StatefulWidget {
@@ -44,7 +43,8 @@ class _SignupPageState extends State<SignupPage> {
         body: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: KeyboardAdjustable(
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -180,9 +180,11 @@ class _SignupFormState extends State<SignupForm> {
                         _isSubmitting = true;
                       });
                       await widget.submit(_key);
-                      setState(() {
-                        _isSubmitting = false;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          _isSubmitting = false;
+                        });
+                      }
                     },
               style: TextButton.styleFrom(
                 minimumSize: const Size.fromHeight(32),

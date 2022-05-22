@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:planter_squared/screens/signup_user.dart';
+import 'package:planter_squared/res/auth_exceptions.dart';
+import 'package:planter_squared/res/auth_repo.dart';
 import 'package:planter_squared/utils/form_field_validators.dart';
+import 'package:planter_squared/utils/routes.dart';
 import 'package:planter_squared/widgets/form_input.dart';
 import 'package:planter_squared/widgets/google_button.dart';
-import 'package:planter_squared/widgets/keyboard_adjustable.dart';
 import 'package:planter_squared/widgets/text_widgets.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -31,19 +33,29 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  Future<void> _loginUser(Auth auth) async {
+    final String email = _emailController.text;
+    final String password = _passwordController.text;
+    await auth
+        .loginUser(email: email, password: password)
+        .onError<AuthException>(
+            (error, _) => showSnackbar(error.message, context));
+  }
+
   void _navigateToSignup() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => const SignupPage()));
+    Navigator.of(context).pushNamed(Routers.signup);
   }
 
   @override
   Widget build(BuildContext context) {
+    final Auth authService = Provider.of(context);
     return SafeArea(
       child: Scaffold(
         body: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: KeyboardAdjustable(
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
@@ -70,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                     passwordController: _passwordController,
                     submit: (formKey) async {
                       if (formKey.currentState!.validate()) {
-                        print('Valid data!');
+                        await _loginUser(authService);
                       }
                     },
                   ),
@@ -188,7 +200,12 @@ class _LoginFormState extends State<LoginForm> {
                 backgroundColor: theme.colorScheme.primary,
               ),
               child: _isSubmitting
-                  ? const Center(child: CircularProgressIndicator())
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation(theme.colorScheme.onPrimary),
+                      ),
+                    )
                   : Text(
                       'Log in',
                       style: theme.textTheme.button?.copyWith(
