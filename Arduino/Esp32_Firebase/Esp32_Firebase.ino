@@ -20,8 +20,8 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 #define WIFI_PASSWORD "L528k925"
 
 // Firebase config
-#define FIREBASE_HOST "https://arduino-e8bcf-default-rtdb.europe-west1.firebasedatabase.app/"
-#define FIREBASE_AUTH "4fpVtnp9NePNpxr4msYt1CkEaljf7rAGLFlvhbAX"
+#define FIREBASE_HOST "https://pepperoni-nipples-default-rtdb.europe-west1.firebasedatabase.app/"
+#define FIREBASE_AUTH "wjjhEdV3CtHqhzPjHsrRVR8STLC0xBd0v7frHHxE"
 
 // Sleep Time for 30 minutes
 #define DEEP_SLEEP_TIME 1
@@ -30,34 +30,35 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 FirebaseData firebaseData;
 String node = "/Plants";
 
-String plant2 = "/954ea1ba-0b01-4a07-bb1a-42ebc515b611";
+String plant = "/954ea1ba-0b01-4a07-bb1a-42ebc515b611";
 
 // Firebase Paths
 String tempPath = "/temp";
 String soilHumPath = "/soilHum";
 String lightPath = "/light";
-String alertPath = "/alert";
+String alertPath= "/alert";
+String okPath = "/okay";
 String regaPath = "/waterPlant";
 String modelPath = "/vase";
 
 // Vase Sensores Consts
-#define LightPin2 1
-#define TempPin2 2
-#define SoilHum2 3
-#define alertPin2 4
-#define rPin2 13
-#define gPin2 12
-#define bPin2 11
+#define LightPin 1
+#define TempPin 2
+#define SoilHum 3
+#define alertPin 4
+#define rPin1 13
+#define gPin1 12
+#define bPin1 11
 
 void setup() 
 {
   Serial.begin(115200);
 
   //light pins for vase
-  pinMode(alertPin2, OUTPUT);
-  pinMode(rPin2, OUTPUT);
-  pinMode(gPin2, OUTPUT);
-  pinMode(bPin2, OUTPUT);
+  pinMode(alertPin, OUTPUT);
+  pinMode(rPin1, OUTPUT);
+  pinMode(gPin1, OUTPUT);
+  pinMode(bPin1, OUTPUT);
   
   pixels.begin();
   Serial.println();
@@ -78,6 +79,11 @@ void setup()
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
   Serial.println("FireBase connected");
   Firebase.reconnectWiFi(true);
+
+  Firebase.setFloat(firebaseData, node + plant + "/minSoilHum", 23.0);
+  Firebase.setFloat(firebaseData, node + plant + "/maxSoilHum", 200.0);
+  Firebase.setFloat(firebaseData, node + plant + "/minTemp", 10.0);
+  Firebase.setFloat(firebaseData, node + plant + "/maxTemp", 50.0);
 }
 
 
@@ -85,13 +91,9 @@ void loop(){
   pixels.setPixelColor(0, pixels.Color(0, 0, 20));
   pixels.show();
   
-  //wake Firebase after delay
-  //wakeUpFirebase();
-  
-  
   //escreve valores da planta e verifica se precisa de regar
-  checkForRega(plant2, rPin2, gPin2, bPin2);
-  writeValuesToDB(plant2, "vase");
+  checkForRega(plant);
+  writeValuesToDB(plant, "vase");
 
 
   //waits for 5 seconds
@@ -105,57 +107,62 @@ void loop(){
 
 void writeValuesToDB(String vaseID, String vaseModel){
   
-  Serial.println();
+    Serial.println();
   
-  
-      
     //read values from sensors
-    Serial.println("Reading sensors for model 2");
+    Serial.println("Reading sensors for model");
     
-    float lightValue = (float)getBestValue(LightPin2)/8191.0*100.0;
-    Firebase.pushFloat(firebaseData, node + vaseID + lightPath, lightValue);
-    Serial.print("Light2 = "); Serial.println(lightValue);
-    Serial.println(node + vaseID + lightPath);
-    float soilHumValue = (float)getBestValue(SoilHum2)/8191.0*100.0;
-    Firebase.pushFloat(firebaseData, node + vaseID + soilHumPath, soilHumValue);
-    turnOnRGBLedForHumidity(rPin2, gPin2, bPin2, soilHumValue);
-    Serial.print("Soil2 = "); Serial.println(soilHumValue);
+    float lightValue = (float)getBestValue(LightPin)/8191.0*100.0;
+    Firebase.setFloat(firebaseData, node + vaseID + lightPath, lightValue);
+    Serial.print("Light = "); Serial.println(lightValue);
     
-    //float tempValue = getTemperature(getBestValue(TempPin2));
+    float soilHumValue = (float)getBestValue(SoilHum)/8191.0*100.0;
+    Firebase.setFloat(firebaseData, node + vaseID + soilHumPath, soilHumValue);
+    turnOnRGBLedForHumidity(rPin1, gPin1, bPin1, soilHumValue);
+    Serial.print("Soil = "); Serial.println(soilHumValue);
+    
+    //float tempValue = getTemperature(getBestValue(TempPin));
     float tempValue = random(2000, 2500)/100.00;
-    Firebase.pushFloat(firebaseData, node + vaseID + tempPath, tempValue);
-    Serial.print("Temp2 = "); Serial.println(tempValue);
+    Firebase.setFloat(firebaseData, node + vaseID + tempPath, tempValue);
+    Serial.print("Temp = "); Serial.println(tempValue);
     
-    if(!checkParameters(vaseID, soilHumValue, tempValue))
-      sendAlert(vaseID, alertPin2);
+    if(!checkParameters(vaseID, soilHumValue, tempValue)){
+      sendAlert(vaseID);
       
+    }
+    else {
+      itIsOkay(vaseID, alertPin);
+      
+    } 
   
     
 }
 
 void turnOnRGBLedForHumidity(int rPin, int gPin, int bPin, float humVal){
+  //valores de humidade altos, fica azul
   if(humVal >= 75.0){
     digitalWrite(rPin, LOW);
     digitalWrite(gPin, LOW);
     digitalWrite(bPin, HIGH);
   }
+  //valores de humidade normais, fica verde
   else if(humVal >= 50.0 && humVal < 75.0){
     digitalWrite(rPin, LOW);
     digitalWrite(gPin, HIGH);
     digitalWrite(bPin, LOW);
+    Serial.println("Verde");
   }
-  else if(humVal >= 25.0 && humVal < 50.0){
-    digitalWrite(rPin, HIGH);
-    digitalWrite(gPin, HIGH);
-    digitalWrite(bPin, LOW);
-  }
+ 
+  //valores de humidade muito baixo, fica vermelho
   else{
     digitalWrite(rPin, HIGH);
     digitalWrite(gPin, LOW);
     digitalWrite(bPin, LOW);
+    Firebase.setBool(firebaseData, node + plant + regaPath, true);
   }
 }
 
+//devolve a média de 8 valores, retirando o maior e o menor valor para nao ser bias
 float getBestValue(int pin){
   float values[10];
 
@@ -193,18 +200,16 @@ float getBestValue(int pin){
 }
 
 float getTemperature(float val){
-  float R1 = 10000;
-  float logR2, R2, T, Tc, Tf; 
-  float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
   
-  R2 = R1 * (4095.0 / (float)val - 1.0);
-  logR2 = log(R2);
-  T = (1.0 / (c1 + c2*logR2 + c3*logR2*logR2*logR2));
-  Tc = T - 273.15;
-
-  return Tc;
+  float voltage = (val) * (5.0);
+  voltage /= 1024;
+  
+  float temperatureC = (voltage - 0.5) * 100 ;
+  
+  return temperatureC;
 }
 
+//todo define min and max values for temp and humidity
 boolean checkParameters(String vaseID, float soilHumValue, float tempValue){
 
   Firebase.getFloat(firebaseData, node + vaseID + "/minSoilHum");
@@ -218,31 +223,32 @@ boolean checkParameters(String vaseID, float soilHumValue, float tempValue){
   float maxTempVal = firebaseData.floatData();
 
   if(soilHumValue < minSoilHumVal || soilHumValue > maxSoilHumVal || tempValue < minTempVal || tempValue > maxTempVal){
-    return false;
+    return false;  
   }
   return true;
 }
 
-void sendAlert(String vaseID, int redLedPin){
+void sendAlert(String vaseID){
   Firebase.setBool(firebaseData, node + vaseID + alertPath, true);
-  digitalWrite(redLedPin, HIGH);
+  digitalWrite(alertPin, HIGH);
+}
+void itIsOkay(String vaseID, int redLedPin){
+  Firebase.setBool(firebaseData, node + vaseID + okPath, true);
+  digitalWrite(redLedPin, LOW);
 }
 
-void checkForRega(String vaseID, int rLED, int gLED, int bLED){
-  
-  if(Firebase.getBool(firebaseData, node + vaseID + regaPath)){
+
+void checkForRega(String vaseID){
+  Firebase.getBool(firebaseData, node + vaseID + regaPath);
+  bool rega = firebaseData.boolData();
+  if(rega){
     //rega durante 10 segundos simulado com led RGB branco
     Firebase.setBool(firebaseData, node + vaseID + regaPath, false);
-    digitalWrite(rLED, HIGH);
-    digitalWrite(gLED, HIGH);
-    digitalWrite(bLED, HIGH);
+    digitalWrite(rPin1, LOW);
+    digitalWrite(gPin1, HIGH);
+    digitalWrite(bPin1, LOW);
+   
     delay(10000);
   }
   
-}
-
-void wakeUpFirebase(){
-  Firebase.pushFloat(firebaseData, node + "/wake", 1);
-  //waits for 5 seconds
-  delay(7000);
 }
