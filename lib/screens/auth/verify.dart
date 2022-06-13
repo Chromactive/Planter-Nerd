@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:planter_squared/data/providers/authentication.dart';
 import 'package:planter_squared/widgets/text.dart';
@@ -73,13 +72,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Superscript(
-                  base: Text('Email verification'),
-                  superscript: Text('sent'),
+                  base: const Text('Email verification'),
+                  superscript: const Text('sent'),
                   baseStyle: textTheme.headlineSmall,
                   superscriptStyle: textTheme.headlineSmall,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Text('Please confirm a verification email has been sent to your address.'),
                 ),
                 Row(

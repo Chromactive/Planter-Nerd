@@ -122,8 +122,10 @@ class _SignupScreenState extends State<SignupScreen> {
   Future _signup() async {
     final String email = _emailController.text;
     final String password = _passwordController.text;
+    final String username = _usernameController.text;
+    _auth!.nextName = username;
     await _auth!
-        .signUp(email: email, password: password)
+        .signUp(email: email, username: username, password: password)
         .then((value) => (_auth!.firebaseUser?.emailVerified ?? false)
             ? Navigator.pop(context)
             : Navigator.pushReplacementNamed(context, Routes.verify))

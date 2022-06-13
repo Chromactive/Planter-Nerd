@@ -30,6 +30,9 @@ class Authentication with ChangeNotifier {
   bool get isLoading => _loading;
   bool get _emailVerified => firebaseUser?.emailVerified ?? false;
 
+  String? _nextName;
+  set nextName(String n) => _nextName = n;
+
   Future signIn({
     required String email,
     required String password,
@@ -47,6 +50,7 @@ class Authentication with ChangeNotifier {
 
   Future signUp({
     required String email,
+    required String username,
     required String password,
   }) async {
     try {
@@ -107,9 +111,10 @@ class Authentication with ChangeNotifier {
     if (firebaseUser == null) return;
     AuthUser user = AuthUser(
       uid: firebaseUser!.uid,
-      name: firebaseUser!.displayName,
+      name: firebaseUser!.displayName ?? _nextName,
       email: firebaseUser!.email,
     );
+    _nextName = null;
     AuthUser? existing = await userDatabase.fetchSingle(firebaseUser!.uid);
     if (existing == null) {
       await userDatabase.createEntry(user.json(), id: firebaseUser!.uid);

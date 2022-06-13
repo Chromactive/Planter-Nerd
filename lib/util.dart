@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 Widget loadingScreen() {
-  return Center(
+  return const Center(
     child: CircularProgressIndicator(),
   );
 }
