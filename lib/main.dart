@@ -4,6 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:planter_squared/data/providers/authentication.dart';
 import 'package:planter_squared/firebase_options.dart';
 import 'package:planter_squared/routes.dart';
+import 'package:planter_squared/screens/auth/auth_screens.dart';
+import 'package:planter_squared/screens/auth/splash.dart';
+import 'package:planter_squared/screens/auth/verify.dart';
 import 'package:planter_squared/screens/auth/wrapper.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +31,10 @@ class PlanterNerd extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         routes: {
           Routes.loading: (_) => const AuthenticationWrapper(),
+          Routes.splash: (_) => const SplashScreen(),
+          Routes.login: (_) => const LoginScreen(),
+          Routes.signup: (_) => const SignupScreen(),
+          Routes.verify: (_) => const VerifyEmailScreen(),
         },
       ),
     );

@@ -60,8 +60,8 @@ class Authentication with ChangeNotifier {
     }
   }
 
-  void sendVerificationEmail() {
-    firebaseUser?.sendEmailVerification();
+  Future sendVerificationEmail() async {
+    await firebaseUser?.sendEmailVerification();
   }
 
   Future signOut() async {
@@ -70,6 +70,7 @@ class Authentication with ChangeNotifier {
     _firebaseUser = null;
     _authUser = null;
     _userListener?.cancel();
+    _emailVerificationTimer?.cancel();
     notifyListeners();
   }
 
@@ -80,7 +81,7 @@ class Authentication with ChangeNotifier {
       _authUser = null;
     } else {
       _firebaseUser = firebaseUser;
-      if (!_emailVerified) {
+      if (_emailVerified) {
         _emailVerificationTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
           await this.firebaseUser!.reload();
           _firebaseUser = _auth.currentUser;
