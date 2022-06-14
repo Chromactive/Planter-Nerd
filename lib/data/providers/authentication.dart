@@ -2,9 +2,13 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:planter_squared/data/models/garden.dart';
+import 'package:planter_squared/data/models/todo.dart';
 import 'package:planter_squared/data/models/user.dart';
 import 'package:planter_squared/data/providers/auth_exceptions.dart';
 import 'package:planter_squared/data/repos.dart';
+import 'package:planter_squared/data/util/constants.dart';
+import 'package:planter_squared/data/util/firebase_service.dart';
 
 enum AuthStatus { uninitialized, authenticated, authenticating, unauthenticated }
 
@@ -110,10 +114,19 @@ class Authentication with ChangeNotifier {
   Future _saveUser() async {
     if (firebaseUser == null) return;
     AuthUser user = AuthUser(
-      uid: firebaseUser!.uid,
-      name: firebaseUser!.displayName ?? _nextName,
-      email: firebaseUser!.email,
-    );
+        uid: firebaseUser!.uid,
+        name: firebaseUser!.displayName ?? _nextName,
+        email: firebaseUser!.email,
+        planterDatabase: CloudDatabaseService(
+          collection: '${DatabaseConstants.userCollection}/${firebaseUser!.uid}/${DatabaseConstants.planterCollection}',
+          fromJson: Planter.load,
+          toJson: (planter) => planter.json(),
+        ),
+        taskDatabase: CloudDatabaseService(
+          collection: '${DatabaseConstants.userCollection}/${firebaseUser!.uid}/${DatabaseConstants.planterCollection}',
+          fromJson: Task.load,
+          toJson: (task) => task.json(),
+        ));
     _nextName = null;
     AuthUser? existing = await userDatabase.fetchSingle(firebaseUser!.uid);
     if (existing == null) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:planter_squared/data/providers/authentication.dart';
 import 'package:planter_squared/screens/auth/splash.dart';
+import 'package:planter_squared/screens/home.dart';
 import 'package:planter_squared/util.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +17,7 @@ class AuthenticationWrapper extends StatelessWidget {
           case AuthStatus.unauthenticated:
             return const SplashScreen();
           case AuthStatus.authenticated:
-            return auth.isLoading ? loadingScreen() : Container();
+            return auth.isLoading ? loadingScreen() : const HomeScreen();
           case AuthStatus.uninitialized:
           default:
             return loadingScreen();

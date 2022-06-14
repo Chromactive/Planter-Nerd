@@ -1,10 +1,47 @@
 {
   "project_info": {
     "project_number": "988490490890",
+    "firebase_url": "https://pepperoni-nipples-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "pepperoni-nipples",
     "storage_bucket": "pepperoni-nipples.appspot.com"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988490490890:android:faa460fad48681d45aebf3",
+        "android_client_info": {
+          "package_name": "com.example.plant_nerd"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "988490490890-dejc9b1qdmd2h6u3utmptsonla9iovmh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlCbNMjD0rUjluN6I3d0CWA2sBdObaVm0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "988490490890-dejc9b1qdmd2h6u3utmptsonla9iovmh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "988490490890-66icivp5vijp0c50jr5tr1gkvhgajul5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.plantNerd"
+              }
+            }
+          ]
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:988490490890:android:b59616aa344fb9b85aebf3",
@@ -31,10 +68,10 @@
               "client_type": 3
             },
             {
-              "client_id": "988490490890-h2pcnmcnap4obube2f7rav4r1t2t6lki.apps.googleusercontent.com",
+              "client_id": "988490490890-66icivp5vijp0c50jr5tr1gkvhgajul5.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.planterSquared"
+                "bundle_id": "com.example.plantNerd"
               }
             }
           ]

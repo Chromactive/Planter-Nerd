@@ -16,6 +16,7 @@ abstract class DatabaseService<T> {
   Future<T?> fetchSingle(String id);
   Stream<T?> streamSingle(String id);
   Stream<List<T>> streamCollection();
+  Stream<List<T>> streamFiltered(Query<Json> Function(CollectionReference<Json> ref) filterer);
 
   Future createEntry(Json data, {String? id});
   Future updateEntry(Json data, {required String id});
@@ -38,6 +39,7 @@ class CloudDatabaseService<T> extends DatabaseService<T> {
   @override
   Future createEntry(Json data, {String? id}) async {
     final collRef = _database.collection(collection);
+    print(data);
     id != null ? await collRef.doc(id).set(data) : await collRef.add(data);
   }
 
@@ -56,6 +58,12 @@ class CloudDatabaseService<T> extends DatabaseService<T> {
   Stream<List<T>> streamCollection() {
     final reference = _database.collection(collection);
     return reference.snapshots().map((list) => list.docs.map((item) => fromJson(item.data())).toList());
+  }
+
+  @override
+  Stream<List<T>> streamFiltered(Query<Json> Function(CollectionReference<Json> ref) filterer) {
+    final reference = _database.collection(collection);
+    return filterer(reference).snapshots().map((list) => list.docs.map((item) => fromJson(item.data())).toList());
   }
 
   @override
