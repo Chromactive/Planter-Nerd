@@ -347,10 +347,8 @@ class _PlanterListViewState extends State<PlanterListView> {
                             longPressEnabled: _longPressFlag,
                             onItemToggled: () {
                               if (_selectedForDeletion.any((p) => p.planterId == planters[index].planterId)) {
-                                print('removing');
                                 _selectedForDeletion.removeWhere((p) => p.planterId == planters[index].planterId);
                               } else {
-                                print('adding');
                                 _selectedForDeletion.add(planters[index]);
                               }
                               _longPress();

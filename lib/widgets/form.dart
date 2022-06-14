@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:planter_squared/data/models/garden.dart';
 import 'package:planter_squared/data/models/todo.dart';
 import 'package:planter_squared/data/providers/authentication.dart';
-import 'package:planter_squared/routes.dart';
 import 'package:planter_squared/screens/plant_list.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -286,8 +285,6 @@ class ModalTaskForm extends StatefulWidget {
 }
 
 class _ModalTaskFormState extends State<ModalTaskForm> {
-  final GlobalKey<FormState> _key = GlobalKey<FormState>();
-
   DateTime? _taskDate;
   final List<bool> _requirementSelection = [false, false, false];
   late final TextEditingController _descriptionController;

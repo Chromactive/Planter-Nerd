@@ -70,14 +70,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   superscriptStyle: textTheme.titleLarge,
                 ),
               ),
-              LoginForm(
-                emailController: _emailController,
-                passwordController: _passwordController,
-                submit: (formKey) async {
-                  if (formKey.currentState!.validate()) {
-                    await _login();
-                  }
-                },
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: LoginForm(
+                  emailController: _emailController,
+                  passwordController: _passwordController,
+                  submit: (formKey) async {
+                    if (formKey.currentState!.validate()) {
+                      await _login();
+                    }
+                  },
+                ),
               ),
             ],
           ),

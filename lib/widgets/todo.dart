@@ -5,7 +5,6 @@ import 'package:planter_squared/data/models/model_fields.dart';
 import 'package:planter_squared/data/models/todo.dart';
 import 'package:planter_squared/data/providers/authentication.dart';
 import 'package:planter_squared/util.dart';
-import 'package:planter_squared/widgets/form.dart';
 import 'package:planter_squared/widgets/list.dart';
 import 'package:planter_squared/widgets/text.dart';
 import 'package:provider/provider.dart';
@@ -36,8 +35,8 @@ class _TaskListViewState extends State<TaskListView> {
                 color: Colors.black,
                 superscript:
                     Text(stream.connectionState == ConnectionState.waiting ? '' : '${stream.data?.length ?? 0}'),
-                baseStyle: Theme.of(context).textTheme.headlineMedium?.apply(fontWeightDelta: 1),
-                superscriptStyle: Theme.of(context).textTheme.headlineSmall,
+                baseStyle: textTheme.headlineMedium?.apply(fontWeightDelta: 1),
+                superscriptStyle: textTheme.headlineSmall,
               ),
             ),
             Expanded(
@@ -80,11 +79,7 @@ class TaskList extends StatelessWidget {
             height: 35,
             child: Filters(
               filters: filters,
-              onFiltersChange: (f) {
-                f.forEach((i) {
-                  print(filters[i]);
-                });
-              },
+              onFiltersChange: (f) {},
             ),
           ),
         ),

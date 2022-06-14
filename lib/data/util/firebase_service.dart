@@ -39,7 +39,6 @@ class CloudDatabaseService<T> extends DatabaseService<T> {
   @override
   Future createEntry(Json data, {String? id}) async {
     final collRef = _database.collection(collection);
-    print(data);
     id != null ? await collRef.doc(id).set(data) : await collRef.add(data);
   }
 
